@@ -8,7 +8,19 @@ beforeEach(() => {
 });
 
 describe('Authenitication endpoint tests', () => {
-    
+    it("Doesn't register on empty fields", async () => {
+        return request(server)
+            .post('/api/register')
+            .send({
+                username: "oloruntobi",
+                password: ""
+            })
+            .expect(400)
+            .then(async (res) => {
+                expect(res.body).toEqual({ error: "Username and password needs to be provided" });
+            })
+    });
+
     it('Can login', async (done) => {
         let agent = request(server);
         agent.post('/api/register')

@@ -14,18 +14,25 @@ module.exports = server => {
 function register(req, res) {
   // implement user registration
   let user = req.body;
-  const hash = bcrypt.hashSync(user.password, 10); 
-  user.password = hash;
-  db("users")
-  .insert(user)
-  .then(id =>db('users').where({ id: id[0]}))
-  .then(user => {
-    const token = generateToken(user)
-    return res.status(201).json({ user })
-  })
-  .catch(error => {
-    res.status(500).json(error)
-  })
+  if(user.username && user.password){
+    const hash = bcrypt.hashSync(user.password, 10); 
+    user.password = hash;
+    db("users")
+    .insert(user)
+    .then(id =>db('users').where({ id: id[0]}))
+    .then(user => {
+      const token = generateToken(user)
+      return res.status(201).json({ user })
+    })
+    .catch(error => {
+      res.status(500).json(error)
+    })
+  }else {
+    res.status(400).json({
+      error: "Username and password needs to be provided"
+    })
+  }
+ 
 }
 
 function login(req, res) {
